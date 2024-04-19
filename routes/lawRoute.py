@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify , request, make_response, send_from_directory
 import os
-from ..services.law import get_all_laws
+from ..services.law import get_all_laws , get_all_unique_wizara
 
 law_routes = Blueprint('law_routes', __name__)
 
@@ -25,6 +25,10 @@ def get_all_laws_route():
 
     return jsonify(serialized_laws)
 
+@law_routes.route('/laws/wizara', methods=['GET'])  # New route to get unique wizara values
+def get_unique_wizara_route():
+    unique_wizara = get_all_unique_wizara()  # Call get_all_unique_wizara method
+    return jsonify(unique_wizara)  # Return unique wizara values as JSON
 
 UPLOAD_FOLDER = 'uploads'  # Dossier de téléchargement
 if not os.path.exists(UPLOAD_FOLDER):

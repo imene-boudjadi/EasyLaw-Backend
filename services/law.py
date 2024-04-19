@@ -16,11 +16,16 @@ def get_all_laws():
 
     return laws
 
+def get_all_unique_wizara():
+    unique_wizara = Law.query.with_entities(Law.wizara).distinct().all()
+    unique_wizara = [w[0] for w in unique_wizara]  # Extracting wizara values from tuples
+
+    return unique_wizara
 
 def get_all_laws_with_sum():
     laws = Law.query.all()
 
-    total_sum = db.session.query(func.sum(Law.num_jarida)).scalar()
+    total_sum = db.session.query(func.sum(Law.idLaw)).scalar()
 
     return {
         "data": laws,
