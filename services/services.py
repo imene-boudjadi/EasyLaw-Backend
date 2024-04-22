@@ -1,7 +1,7 @@
 # services.py
 
 from flask import request
-from ..models.models import Users, Funds, Law
+from ..models.models import Users, Funds
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify
 import jwt

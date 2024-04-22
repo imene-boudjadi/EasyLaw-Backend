@@ -1,4 +1,3 @@
-# services.py
 
 from flask import request
 from ..models.models import  Law

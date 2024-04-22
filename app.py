@@ -12,5 +12,7 @@ from .routes.userRoutes import user_routes
 
 CORS(app)
 
+
 app.register_blueprint(user_routes, url_prefix='/')
 app.register_blueprint(law_routes, url_prefix='/')
+
