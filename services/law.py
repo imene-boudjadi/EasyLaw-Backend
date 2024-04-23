@@ -38,9 +38,9 @@ def index_laws():
                     "sujet": {"type": "text"},
                     "type": {"type": "text"},
                     "num": {"type": "text"},
-                    # "date": {"type": "text"},
+                    "date": {"type": "text"},
                     "num_jarida": {"type": "text"},
-                    # "date_jarida": {"type": "text"},
+                    "date_jarida": {"type": "text"},
                     "page_jarida": {"type": "text"}
                 }
             }
