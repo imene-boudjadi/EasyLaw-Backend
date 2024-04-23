@@ -2,8 +2,8 @@ __pycache__/
 env/
 .env
 uploads/
-scriptplodsPdf
+scriptplodsPdf.py
 .gitignore
-README
+README.txt
 
 
