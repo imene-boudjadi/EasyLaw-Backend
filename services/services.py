@@ -35,6 +35,7 @@ def signup(data):
     return {"message": "Unable to create user"}, 500
 
 def login(auth):
+   
     if not auth or not auth.get("password"):
         return "Proper Credentials were not provided", 401
     user = Users.query.filter_by(email=auth.get("email")).first()

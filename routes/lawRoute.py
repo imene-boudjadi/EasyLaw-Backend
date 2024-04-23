@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify , request, make_response, send_from_directory
 import os
-from ..services.law import get_all_laws , get_all_unique_wizara
+from ..services.law import get_all_laws , get_all_unique_wizara, search_laws , index_laws ,filter_laws
 
 law_routes = Blueprint('law_routes', __name__)
 
@@ -52,3 +52,29 @@ def upload_file():
 @law_routes.route('/upload/<path:filename>', methods=['GET'])
 def download_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+
+@law_routes.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('q')
+    index_laws()
+    results = search_laws(query)
+    return jsonify(results)
+
+@law_routes.route('/filtered-laws', methods=['GET'])
+def get_filtered_laws():
+    # Récupérer les paramètres de requête
+    wizara = request.args.get('wizara')
+    law_type = request.args.get('law_type')
+    num_jarida = request.args.get('num_jarida')
+    date_jarida = request.args.get('date_jarida')
+    page_jarida = request.args.get('page_jarida')
+
+    # Appliquer les filtres et récupérer les lois filtrées
+    filtered_laws = filter_laws(wizara, law_type, num_jarida, date_jarida, page_jarida)
+
+    # Convertir les objets Law en format JSON
+    laws_json = [{'idLaw': law.idLaw, 'wizara': law.wizara, 'type': law.type, 'num_jarida': law.num_jarida, 'date_jarida': law.date_jarida, 'page_jarida': law.page_jarida} for law in filtered_laws]
+
+    # Retourner les lois filtrées au format JSON
+    return jsonify({'filtered_laws': laws_json})

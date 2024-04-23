@@ -34,7 +34,7 @@ def download_pdf(url, folder):
 folder = "uploads"
 
 # Boucle sur les annees de 1965 à 2014
-for year in range(1965,1967 ):    # Boucle de 1 à 120
+for year in range(2024,2025 ):    # Boucle de 1 à 120
     for num in range(1, 121):
         # Format de l'URL avec l'année et le numéro pour la première URL
         url = f"https://www.joradp.dz/FTP/jo-arabe/{year}/A{year}{num:03}.pdf"
