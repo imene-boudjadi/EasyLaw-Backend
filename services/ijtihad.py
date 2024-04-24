@@ -10,7 +10,13 @@ from .. import db
 from random import shuffle
 
 
-
+try:
+    es = Elasticsearch(
+        ['http://localhost:9200'],  # Include the port in the host URL
+        http_auth=('elastic','elastic'),  # Add your username and password here
+    )
+except Exception as e:
+    print("Erreur lors de la connexion à Elasticsearch:", e)
 
 def get_all_qrar():
     qrar = Qrar.query.all()
@@ -144,3 +150,34 @@ def get_all_chambres():
 def get_all_takyif():
     takyifs = Takyif.query.all()
     return takyifs
+
+def search_qrar(query):
+    res = es.search(index='qrar', body={
+        "query": {
+            "match": {
+                "principe": query
+            }
+        }
+    })
+    return res['hits']['hits']
+
+def index_qrar():
+    qrars = Qrar.query.all()
+    if not es.indices.exists(index='qrar'):
+        index_mapping = {
+            "mappings": {
+                "properties": {
+                    "sujetQarar": {"type": "text"},
+                    "principe": {"type": "text"},
+                    
+                }
+            }
+        }
+        es.indices.create(index='qrar', body=index_mapping)
+
+    for qrar in qrars:
+        es.index(index='qrar', id=qrar.raqmQarar, body={
+            "sujetQarar": qrar.sujetQarar,
+            "principe": qrar.principe,
+           
+        })

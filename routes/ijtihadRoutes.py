@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from ..services.ijtihad import get_all_qrar, get_all_qrarat_mahkama, get_details_qrarMahkama, get_all_sujets, get_unique_years, get_all_qrarat_with_details, get_details_qrarMajliss, get_all_classes, get_all_chambres, get_all_takyif
+from ..services.ijtihad import get_all_qrar, get_all_qrarat_mahkama, get_details_qrarMahkama, get_all_sujets, get_unique_years, get_all_qrarat_with_details, get_details_qrarMajliss, get_all_classes, get_all_chambres, get_all_takyif, search_qrar, index_qrar
+
 
 ijtihad_routes = Blueprint('ijtihad_routes', __name__)
 
@@ -176,3 +177,11 @@ def get_all_takyif_route():
         serialized_takyifs.append(serialized_takyif)
 
     return jsonify(serialized_takyifs)
+
+
+@ijtihad_routes.route('/searchQrar', methods=['GET'])
+def search():
+    query = request.args.get('q')
+    index_qrar()
+    results = search_qrar(query)
+    return jsonify(results)
