@@ -1,5 +1,5 @@
 from flask import request
-from ..models.models import Qrar, QrarMahkama, sujet, QrarMajliss
+from ..models.models import Qrar, QrarMahkama, sujet, QrarMajliss, Classe, Chambre, Takyif
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify
 # import jwt
@@ -106,6 +106,23 @@ def get_details_qrarMahkama(raqmQarar):
     return qrar_mahkama
 
 
+def get_details_qrarMajliss(raqmQarar):
+    qrar_majliss = db.session.query(
+        QrarMajliss.id_qarar_majliss,
+        QrarMajliss.chambre,
+        QrarMajliss.classe,
+        QrarMajliss.takyif,
+        QrarMajliss.num_qarar,
+        Qrar.raqmQarar,
+        Qrar.dataQarar,
+        Qrar.sujetQarar,
+        Qrar.principe
+    ).join(
+        Qrar, QrarMajliss.num_qarar == Qrar.raqmQarar
+    ).filter(Qrar.raqmQarar == raqmQarar).first()
+    return qrar_majliss
+
+
 def get_all_sujets():
     sujets = sujet.query.all()
     return sujets
@@ -114,3 +131,16 @@ def get_unique_years():
     unique_years = db.session.query(func.extract('year', Qrar.dataQarar)).distinct().all()
     years = [year[0] for year in unique_years if year[0] is not None]  # Filter les valeurs vides
     return years
+
+def get_all_classes():
+    classes = Classe.query.all()
+    return classes
+
+def get_all_chambres():
+    chambres = Chambre.query.all()
+    return chambres
+
+
+def get_all_takyif():
+    takyifs = Takyif.query.all()
+    return takyifs

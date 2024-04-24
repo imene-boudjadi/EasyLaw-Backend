@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from ..services.ijtihad import get_all_qrar, get_all_qrarat_mahkama, get_details_qrarMahkama, get_all_sujets, get_unique_years, get_all_qrarat_with_details
+from ..services.ijtihad import get_all_qrar, get_all_qrarat_mahkama, get_details_qrarMahkama, get_all_sujets, get_unique_years, get_all_qrarat_with_details, get_details_qrarMajliss, get_all_classes, get_all_chambres, get_all_takyif
 
 ijtihad_routes = Blueprint('ijtihad_routes', __name__)
 
@@ -66,6 +66,28 @@ def get_Details_qrarMahkama_route(raqmQarar):
         return jsonify(serialized_qrarMahkama)
     else:
         return jsonify({'message': 'QrarMahkama not found'}), 404
+    
+
+@ijtihad_routes.route('/DetailsqrarMajliss/<int:raqmQarar>', methods=['GET'])
+def get_details_qrarMajliss_route(raqmQarar):
+    qrarMajliss = get_details_qrarMajliss(raqmQarar)
+    
+    if qrarMajliss:
+        serialized_qrarMajliss = {
+            'id_qarar_majliss': qrarMajliss.id_qarar_majliss,
+            'chambre': qrarMajliss.chambre,
+            'classe': qrarMajliss.classe,
+            'takyif': qrarMajliss.takyif,
+            'num_qarar': qrarMajliss.num_qarar,
+            'raqmQarar': qrarMajliss.raqmQarar,
+            'dataQarar': qrarMajliss.dataQarar,
+            'sujetQarar': qrarMajliss.sujetQarar,
+            'principe': qrarMajliss.principe  
+        }
+        return jsonify(serialized_qrarMajliss)
+    else:
+        return jsonify({'message': 'Majliss not found'}), 404
+
 
 @ijtihad_routes.route('/sujetsQarar', methods=['GET'])
 def get_all_sujets_route():
@@ -111,3 +133,46 @@ def get_all_qrarat_with_details_route():
         serialized_qrarat.append(serialized_qrar)
 
     return jsonify(serialized_qrarat)
+
+
+@ijtihad_routes.route('/ClassesQarar', methods=['GET'])
+def get_all_classes_route():
+    classes = get_all_classes()
+    serialized_classes = []
+
+    for classe in classes:
+        serialized_classe = {
+            'Nomclasse': classe.nom_classe      
+        }
+        serialized_classes.append(serialized_classe)
+
+    return jsonify(serialized_classes)
+
+
+@ijtihad_routes.route('/ChambresQarar', methods=['GET'])
+def get_all_chambres_route():
+    chambres = get_all_chambres()
+    serialized_chambres = []
+
+    for chambre in chambres:
+        serialized_chambre = {
+            'NomChambre': chambre.nom_chambre      
+        }
+        serialized_chambres.append(serialized_chambre)
+
+    return jsonify(serialized_chambres)
+
+
+
+@ijtihad_routes.route('/TakyifQarar', methods=['GET'])
+def get_all_takyif_route():
+    takyifs = get_all_takyif()
+    serialized_takyifs = []
+
+    for takyif in takyifs:
+        serialized_takyif = {
+            'nom_takyif': takyif.nom_takyif      
+        }
+        serialized_takyifs.append(serialized_takyif)
+
+    return jsonify(serialized_takyifs)
