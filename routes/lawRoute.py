@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify , request, make_response, send_from_directory
 import os
-from ..services.law import get_all_laws , get_all_unique_wizara, search_laws , index_laws ,filter_laws
+from ..services.law import get_all_laws , get_all_unique_wizara, search_laws , index_laws ,filter_laws,get_law_by_id
 
 law_routes = Blueprint('law_routes', __name__)
 
@@ -53,11 +53,11 @@ def upload_file():
 def download_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
-
+ 
 @law_routes.route('/search', methods=['GET'])
 def search():
     query = request.args.get('q')
-    index_laws()
+    # index_laws()
     results = search_laws(query)
     return jsonify(results)
 
@@ -78,3 +78,10 @@ def get_filtered_laws():
 
     # Retourner les lois filtrées au format JSON
     return jsonify({'filtered_laws': laws_json})
+
+
+
+@law_routes.route('/law/<int:law_id>', methods=['GET'])
+def get_law(law_id):
+    return  get_law_by_id(law_id)
+    

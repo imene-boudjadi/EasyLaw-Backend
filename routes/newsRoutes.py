@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify , request, make_response, send_from_directory
 import os
-from ..services.news import get_all_news , get_one_new
+from ..services.news import get_all_news , get_one_new , search_news , index_news
 
 news_routes = Blueprint('news_routes', __name__)
 
@@ -41,3 +41,12 @@ def get_single_news_route(id):
         return jsonify(serialized_news)
     else:
         return jsonify({"message": "News not found"}), 404
+
+
+
+@news_routes.route('/searchNews', methods=['GET'])
+def search():
+    query = request.args.get('q')
+    index_news()
+    results = search_news(query)
+    return jsonify(results)

@@ -12,19 +12,31 @@ from elasticsearch import Elasticsearch
 
 es = Elasticsearch(
     ['http://localhost:9200'],  # Include the port in the host URL
-    http_auth=('elastic', 'elastic'),  # Add your username and password here
+    http_auth=('elastic', 'elastic'), 
 )
 # Fonction pour effectuer une recherche dans Elasticsearch
 def search_laws(query):
-    # Effectuer une recherche dans l'index 'laws' sur le champ 'sujet' avec la requête spécifiée
-    res = es.search(index='laws', body={
-        "query": {
-            "match": {
-                "sujet": query
+    # Initialiser une liste pour stocker les résultats
+    all_results = []
+
+    # Liste des champs sur lesquels effectuer la recherche
+    fields = ["sujet", "wizara", "type", "num", "num_jarida", "page_jarida"]
+ 
+    # Effectuer une recherche pour chaque champ
+    for field in fields:
+        res = es.search(index='laws', body={
+            "query": {
+                "match": {
+                    field: query
+                }
             }
-        }
-    })
-    return res['hits']['hits']
+        })
+        # Ajouter les résultats à la liste
+        all_results.extend(res['hits']['hits'])
+
+    # Retourner les résultats avec l'identifiant de la loi inclus
+    return [{"idLaw": hit["_id"], **hit["_source"]} for hit in all_results]
+
 
 def index_laws():
     laws = Law.query.all()
@@ -38,9 +50,9 @@ def index_laws():
                     "sujet": {"type": "text"},
                     "type": {"type": "text"},
                     "num": {"type": "text"},
-                    "date": {"type": "text"},
-                    "num_jarida": {"type": "text"},
                     "date_jarida": {"type": "text"},
+                    # "date": {"type": "text"},
+                    "num_jarida": {"type": "text"},                   
                     "page_jarida": {"type": "text"}
                 }
             }
@@ -62,10 +74,8 @@ def index_laws():
         })
 
 def filter_laws(wizara=None, law_type=None,  num_jarida=None, date_jarida=None, page_jarida=None):
-    # Commencez par la requête de base
     query = Law.query
 
-    # Ajoutez les filtres un par un si les valeurs ne sont pas nulles
     if wizara:
         query = query.filter(Law.wizara == wizara)
     if law_type:
@@ -77,7 +87,6 @@ def filter_laws(wizara=None, law_type=None,  num_jarida=None, date_jarida=None, 
     if page_jarida:
         query = query.filter(Law.page_jarida == page_jarida)
 
-    # Exécutez la requête et retournez les résultats
     laws = query.all()
     return laws
 
@@ -102,3 +111,24 @@ def get_all_laws_with_sum():
         "sum": total_sum
     }
 
+def get_law_by_id(law_id):
+    # Récupérer la loi par son ID
+    law = Law.query.get(law_id)
+
+    # Vérifier si la loi existe
+    if law is None:
+        return jsonify({'success': False, 'message': 'Law not found'}), 404
+
+    # Construire le JSON à retourner
+    law_json = {
+        'id': law.idLaw,
+        'wizara': law.wizara,
+        'sujet': law.sujet,
+        'type': law.type,
+        'num': law.num,
+        'date_jarida': law.date_jarida,
+        'num_jarida': law.num_jarida,
+        'page_jarida': law.page_jarida
+    }
+
+    return jsonify({'success': True, 'law': law_json}), 200
