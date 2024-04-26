@@ -1,10 +1,7 @@
 
 from flask import request
-from ..models.models import  Law 
-from werkzeug.security import generate_password_hash, check_password_hash
+from ..models.law import  Law 
 from flask import jsonify
-# import jwt
-# from datetime import datetime, timedelta
 from functools import wraps
 from sqlalchemy import func
 from .. import db
@@ -14,9 +11,8 @@ es = Elasticsearch(
     ['http://localhost:9200'],  # Include the port in the host URL
     http_auth=('elastic', 'elastic'), 
 )
-# Fonction pour effectuer une recherche dans Elasticsearch
+
 def search_laws(query):
-    # Initialiser une liste pour stocker les résultats
     all_results = []
 
     # Liste des champs sur lesquels effectuer la recherche
@@ -97,7 +93,7 @@ def get_all_laws():
 
 def get_all_unique_wizara():
     unique_wizara = Law.query.with_entities(Law.wizara).distinct().all()
-    unique_wizara = [w[0] for w in unique_wizara]  # Extracting wizara values from tuples
+    unique_wizara = [w[0] for w in unique_wizara]  
 
     return unique_wizara
 
@@ -112,14 +108,11 @@ def get_all_laws_with_sum():
     }
 
 def get_law_by_id(law_id):
-    # Récupérer la loi par son ID
     law = Law.query.get(law_id)
 
-    # Vérifier si la loi existe
     if law is None:
         return jsonify({'success': False, 'message': 'Law not found'}), 404
 
-    # Construire le JSON à retourner
     law_json = {
         'id': law.idLaw,
         'wizara': law.wizara,

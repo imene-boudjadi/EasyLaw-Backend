@@ -1,20 +1,16 @@
 from flask import request
-from ..models.models import Qrar, QrarMahkama, sujet, QrarMajliss, Classe, Chambre, Takyif
-from werkzeug.security import generate_password_hash, check_password_hash
+from ..models.ijtihad import Qrar, QrarMahkama, sujet, QrarMajliss, Classe, Chambre, Takyif
 from flask import jsonify
-# import jwt
-# from datetime import datetime, timedelta
 from functools import wraps
 from sqlalchemy import func, literal
 from .. import db
-from random import shuffle
 from elasticsearch import Elasticsearch
 
 
 try:
     es = Elasticsearch(
         ['http://localhost:9200'],  # Include the port in the host URL
-        http_auth=('elastic','elastic'),  # Add your username and password here
+        http_auth=('elastic','elastic'),  
     )
 except Exception as e:
     print("Erreur lors de la connexion à Elasticsearch:", e)
@@ -25,16 +21,15 @@ def get_all_qrar():
 
 
 def get_all_qrarat_mahkama():
-    # join entre la table "قرار_المحكمة" et la table "قرار" pour avoir toutes les informations
     qrarat_mahkama = db.session.query(
-        QrarMahkama.idQrarMahkama,  # columns from QrarMahkama
+        QrarMahkama.idQrarMahkama,  
         QrarMahkama.refLegale,
         QrarMahkama.motsClés,
         QrarMahkama.parties,
         QrarMahkama.repMahkama,
         QrarMahkama.OperatDecision,
         QrarMahkama.raqmQararOrigin,
-        Qrar.raqmQarar,  # columns from Qrar
+        Qrar.raqmQarar,  
         Qrar.dataQarar,
         Qrar.sujetQarar,
         Qrar.principe
@@ -63,7 +58,7 @@ def get_all_qrarat_majliss():
 
 ##################################################################################
 def get_all_qrarat_with_details():
-    # jointure entre QrarMajliss et Qrar
+
     qrarat_with_details_1 = db.session.query(
         Qrar.raqmQarar,
         Qrar.dataQarar,

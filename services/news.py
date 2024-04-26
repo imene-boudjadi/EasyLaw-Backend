@@ -13,15 +13,11 @@ es = Elasticsearch(
     ['http://localhost:9200'],  # Include the port in the host URL
     http_auth=('elastic', 'elastic'), 
 )
-# Fonction pour effectuer une recherche dans Elasticsearch
 def search_news(query):
-    # Initialiser une liste pour stocker les résultats
     all_results = []
 
-    # Liste des champs sur lesquels effectuer la recherche
     fields = ["title", "resumer"]
 
-    # Effectuer une recherche pour chaque champ
     for field in fields:
         res = es.search(index='news', body={
             "query": {

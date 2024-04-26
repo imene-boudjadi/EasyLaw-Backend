@@ -25,12 +25,12 @@ def get_all_laws_route():
 
     return jsonify(serialized_laws)
 
-@law_routes.route('/laws/wizara', methods=['GET'])  # New route to get unique wizara values
+@law_routes.route('/laws/wizara', methods=['GET'])  
 def get_unique_wizara_route():
-    unique_wizara = get_all_unique_wizara()  # Call get_all_unique_wizara method
-    return jsonify(unique_wizara)  # Return unique wizara values as JSON
+    unique_wizara = get_all_unique_wizara()  
+    return jsonify(unique_wizara)  
 
-UPLOAD_FOLDER = 'uploads'  # Dossier de téléchargement
+UPLOAD_FOLDER = 'uploads'  
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
@@ -63,20 +63,16 @@ def search():
 
 @law_routes.route('/filtered-laws', methods=['GET'])
 def get_filtered_laws():
-    # Récupérer les paramètres de requête
     wizara = request.args.get('wizara')
     law_type = request.args.get('law_type')
     num_jarida = request.args.get('num_jarida')
     date_jarida = request.args.get('date_jarida')
     page_jarida = request.args.get('page_jarida')
 
-    # Appliquer les filtres et récupérer les lois filtrées
     filtered_laws = filter_laws(wizara, law_type, num_jarida, date_jarida, page_jarida)
 
-    # Convertir les objets Law en format JSON
     laws_json = [{'idLaw': law.idLaw, 'wizara': law.wizara, 'type': law.type, 'num_jarida': law.num_jarida, 'date_jarida': law.date_jarida, 'page_jarida': law.page_jarida} for law in filtered_laws]
 
-    # Retourner les lois filtrées au format JSON
     return jsonify({'filtered_laws': laws_json})
 
 

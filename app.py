@@ -2,7 +2,7 @@
 
 from . import app, db
 from flask import request, make_response , send_from_directory
-from .services.services import signup, login, token_required, get_all_funds, create_fund
+from .services.user import signup, login, token_required, get_all_funds, create_fund
 from .services.law import get_all_laws , get_all_laws_with_sum 
 from flask import jsonify
 from flask_cors import CORS

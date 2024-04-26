@@ -1,5 +1,5 @@
 from flask import Blueprint, request, make_response
-from ..services.services import signup, login, token_required, get_all_funds, create_fund
+from ..services.user import signup, login, token_required, get_all_funds, create_fund
 
 
 user_routes = Blueprint('user_routes', __name__)
