@@ -1,5 +1,6 @@
 from .. import db
 from sqlalchemy import func
+from datetime import datetime
 
 class Users(db.Model):
     __tablename__ = "Users"
@@ -9,6 +10,9 @@ class Users(db.Model):
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    role = db.Column(db.String(255), nullable=False)
+    deleted= db.Column(db.Boolean, nullable=False)
+    infoContact = db.relationship('InfoContact', backref='actor', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<User {self.firstName} {self.id}>'
@@ -44,3 +48,86 @@ class Law(db.Model):
     page_jarida = db.Column(db.Integer)
     def __repr__(self):
         return f'<Law {self.idLaw}>'
+    
+class InfoContact(db.Model):
+    __tablename__ = "InfoContacts"
+    id = db.Column(db.Integer, primary_key=True)
+    designation = db.Column(db.String(255), nullable=False)
+    value = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f'<InfoContact {self.id}>'
+
+
+class Service(db.Model):
+    __tablename__ = "Services"
+    id = db.Column(db.Integer, primary_key=True)
+    nomService = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    pic = db.Column(db.String(255), nullable=False)
+
+    
+    def __repr__(self):
+        return f'<Service {self.id}>'
+
+
+class AbonementService(db.Model):
+    __tablename__ = "AbonementServices"
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(255), nullable=False)
+    durree = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    service_id = db.relationship('Services', backref='service', lazy=True, cascade='all, delete-orphan')
+    
+    def __repr__(self):
+        return f'<AbonementService {self.id}>'
+
+
+class Payement(db.Model):
+    __tablename__ = "Payements"
+    id = db.Column(db.Integer, primary_key=True)
+    abonement_id = db.relationship('AbonementService', backref='abonement', lazy=True, cascade='all, delete-orphan')
+    plan_tarification = db.relationship('PlanTarifications', backref='plan', lazy=True, cascade='all, delete-orphan')
+    moyen_payment = db.Column(db.String(255), nullable=False)
+    acteur_id = db.relationship('Users', backref='acteur', lazy=True, cascade='all, delete-orphan')
+    date_paiement = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Payement  {self.id}>'
+
+
+class PlanTarifications(db.Model):
+    __tablename__="PlanTarifications"
+    id = db.Column(db.Integer, primary_key=True)
+    abonement_id = db.relationship('AbonementService', backref='abonement', lazy=True, cascade='all, delete-orphan')
+    nom = db.Column(db.String(255), nullable=False)
+    tarif = db.Column(db.Float, nullable=False)
+    type_tarification = db.Column(db.String(255), nullable=False)
+    monnaire = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f'<PlanTarification  {self.id}>'
+    
+
+
+
+class ActeurDomaine(db.Model):
+    __tablename__="ActeurDomaines"
+    id = db.Column(db.Integer, primary_key=True)
+    acteur = db.relationship('Users', backref='acteur', lazy=True, cascade='all, delete-orphan')
+    interest_domain = db.relationship('InterestDomaine', backref='interest', lazy=True, cascade='all, delete-orphan')
+
+
+    def __repr__(self):
+        return f'<ActeurDomaine {self.id}>'
+
+
+class InterestDomaine(db.Model) :
+    __tablename__="InterestDomaines"
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(255), nullable=False)
+
+    
+    def __repr__(self):
+        return f'<InterestDomaine {self.id}>'
+
