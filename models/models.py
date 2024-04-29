@@ -12,7 +12,9 @@ class Users(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     role = db.Column(db.String(255), nullable=False)
     deleted= db.Column(db.Boolean, nullable=False)
-    infoContact = db.relationship('InfoContact', backref='actor', lazy=True, cascade='all, delete-orphan')
+    infoContact = db.relationship('InfoContacts', backref='users', lazy=True, cascade='all, delete-orphan')
+    domaine = db.relationship('InterestDomaines',secondary='ActeurDomaines', backref='users')
+    abonment = db.relationship('AbonementServices', backref='users', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<User {self.firstName} {self.id}>'
@@ -49,61 +51,57 @@ class Law(db.Model):
     def __repr__(self):
         return f'<Law {self.idLaw}>'
     
-class InfoContact(db.Model):
+class InfoContacts(db.Model):
     __tablename__ = "InfoContacts"
     id = db.Column(db.Integer, primary_key=True)
     designation = db.Column(db.String(255), nullable=False)
     value = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.id'))  # Foreign key reference
 
     def __repr__(self):
         return f'<InfoContact {self.id}>'
 
 
-class Service(db.Model):
+class Services(db.Model):
     __tablename__ = "Services"
     id = db.Column(db.Integer, primary_key=True)
     nomService = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False)
     pic = db.Column(db.String(255), nullable=False)
+    plan = db.relationship('PlanTarifications', backref='service', lazy=True, cascade='all, delete-orphan')
+
 
     
     def __repr__(self):
         return f'<Service {self.id}>'
 
 
-class AbonementService(db.Model):
+class AbonementServices(db.Model):
     __tablename__ = "AbonementServices"
     id = db.Column(db.Integer, primary_key=True)
     nom = db.Column(db.String(255), nullable=False)
     durree = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(255), nullable=False)
-    service_id = db.relationship('Services', backref='service', lazy=True, cascade='all, delete-orphan')
-    
+    plan_id = db.Column(db.Integer, db.ForeignKey('PlanTarifications.id'))  # Foreign key reference
+    date_paiement = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    moyen_payment = db.Column(db.String(255), nullable=False)
+    acteur_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
+
     def __repr__(self):
         return f'<AbonementService {self.id}>'
 
-
-class Payement(db.Model):
-    __tablename__ = "Payements"
-    id = db.Column(db.Integer, primary_key=True)
-    abonement_id = db.relationship('AbonementService', backref='abonement', lazy=True, cascade='all, delete-orphan')
-    plan_tarification = db.relationship('PlanTarifications', backref='plan', lazy=True, cascade='all, delete-orphan')
-    moyen_payment = db.Column(db.String(255), nullable=False)
-    acteur_id = db.relationship('Users', backref='acteur', lazy=True, cascade='all, delete-orphan')
-    date_paiement = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<Payement  {self.id}>'
 
 
 class PlanTarifications(db.Model):
     __tablename__="PlanTarifications"
     id = db.Column(db.Integer, primary_key=True)
-    abonement_id = db.relationship('AbonementService', backref='abonement', lazy=True, cascade='all, delete-orphan')
+    service_id = db.Column(db.Integer, db.ForeignKey('Services.id'))  # Foreign key reference
     nom = db.Column(db.String(255), nullable=False)
     tarif = db.Column(db.Float, nullable=False)
     type_tarification = db.Column(db.String(255), nullable=False)
     monnaire = db.Column(db.String(255), nullable=False)
+    abonement = db.relationship('AbonementServices', backref='plan', lazy=True, cascade='all, delete-orphan')
+
 
     def __repr__(self):
         return f'<PlanTarification  {self.id}>'
@@ -111,18 +109,20 @@ class PlanTarifications(db.Model):
 
 
 
-class ActeurDomaine(db.Model):
+class ActeurDomaines(db.Model):
     __tablename__="ActeurDomaines"
-    id = db.Column(db.Integer, primary_key=True)
-    acteur = db.relationship('Users', backref='acteur', lazy=True, cascade='all, delete-orphan')
-    interest_domain = db.relationship('InterestDomaine', backref='interest', lazy=True, cascade='all, delete-orphan')
+    acteur_id = db.Column(db.Integer, db.ForeignKey('Users.id'),primary_key=True)  # Foreign key reference
+    interet_id = db.Column(db.Integer, db.ForeignKey('InterestDomaines.id'),primary_key=True)  # Foreign key reference
+
+    # acteur = db.relationship('Users', backref='acteur', lazy=True, cascade='all, delete-orphan')
+    # interest_domain = db.relationship('InterestDomaines', backref='interest', lazy=True, cascade='all, delete-orphan')
 
 
     def __repr__(self):
         return f'<ActeurDomaine {self.id}>'
 
 
-class InterestDomaine(db.Model) :
+class InterestDomaines(db.Model) :
     __tablename__="InterestDomaines"
     id = db.Column(db.Integer, primary_key=True)
     nom = db.Column(db.String(255), nullable=False)
