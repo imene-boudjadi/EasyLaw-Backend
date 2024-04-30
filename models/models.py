@@ -15,6 +15,7 @@ class Users(db.Model):
     infoContact = db.relationship('InfoContacts', backref='users', lazy=True, cascade='all, delete-orphan')
     domaine = db.relationship('InterestDomaines',secondary='ActeurDomaines', backref='users')
     abonment = db.relationship('AbonementServices', backref='users', lazy=True, cascade='all, delete-orphan')
+    customer_id = db.Column(db.String(255), nullable=True)
 
     def __repr__(self):
         return f'<User {self.firstName} {self.id}>'
@@ -86,6 +87,8 @@ class AbonementServices(db.Model):
     date_paiement = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     moyen_payment = db.Column(db.String(255), nullable=False)
     acteur_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
+    checkout_id = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
         return f'<AbonementService {self.id}>'
@@ -101,6 +104,8 @@ class PlanTarifications(db.Model):
     type_tarification = db.Column(db.String(255), nullable=False)
     monnaire = db.Column(db.String(255), nullable=False)
     abonement = db.relationship('AbonementServices', backref='plan', lazy=True, cascade='all, delete-orphan')
+    price_id = db.Column(db.String(255), nullable=False)
+    durree = db.Column(db.Integer, nullable=False)
 
 
     def __repr__(self):

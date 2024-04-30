@@ -9,10 +9,12 @@ from flask_cors import CORS
 import os
 from .routes.lawRoute import law_routes # Importez la fonction depuis le fichier lawRoutes.py
 from .routes.userRoutes import user_routes 
+from .routes.subscribtionRoute import subscribtion_routes 
 
 CORS(app)
 
 
 app.register_blueprint(user_routes, url_prefix='/')
 app.register_blueprint(law_routes, url_prefix='/')
+app.register_blueprint(subscribtion_routes, url_prefix='/')
 
