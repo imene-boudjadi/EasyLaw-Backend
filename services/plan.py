@@ -37,3 +37,35 @@ def new_plan(data):
             db.session.rollback()
             return {'error': str(e)}, 500
  
+
+def edit_plan(data) : 
+    
+    plan_id = data.get('plan_id')
+    if(plan_id is None) : 
+        return {'error': 'plan_id is required '}, 404
+
+    plan = PlanTarifications.query.get(plan_id)
+    if not plan:
+        return {'error': 'Plan not found'}, 404
+
+    if 'nom' in data:
+        plan.nom = data['nom']
+    if 'tarif' in data:
+        plan.tarif = data['tarif']
+    if 'type_tarification' in data:
+        if(data['type_tarification'] != "مخصص" and data['type_tarification'] != "مميز") :
+                return {"error":"Unallowed type of tarification the allowed values are (مخصص or مميز)"},400
+        plan.type_tarification = data['type_tarification']
+
+    if 'durree' in data:
+        if(data['durree'] != 30 and data['durree'] != 365) : 
+            return {"error":"Unallowed durree  (the allowed values are : 30 or 365)"},400
+        plan.durree = data['durree']
+
+    try:
+        db.session.commit()
+        return {'message': 'Plan updated successfully'}, 200
+    except Exception as e:
+        db.session.rollback()
+        return {'error': str(e)}, 500
+    
