@@ -1,7 +1,7 @@
 # services.py
 
 from flask import request
-from ..models.user import Users, Funds
+from ..models.user import Users, Funds , RoleEnum
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import jsonify
 import jwt
@@ -11,23 +11,23 @@ from sqlalchemy import func
 from .. import db
 
 
-
-
 def signup(data):
-    firstName = data.get("firstName")
-    LastName = data.get("LastName")
+    username = data.get("username")
     email = data.get("email")
     password = data.get("password")
+    role = data.get("role")
+    phoneNumber = data.get("phoneNumber")
 
-    if firstName and LastName and email and password:
+    if username and email and password and role:
         user = Users.query.filter_by(email=email).first()
         if user:
             return {"message": "Please sign in"}, 200
         user = Users(
+            username=username,
             email=email,
             password=generate_password_hash(password),
-            firstName=firstName,
-            LastName=LastName
+            role=RoleEnum(role),
+            phoneNumber=phoneNumber
         )
         db.session.add(user)
         db.session.commit()
@@ -35,7 +35,6 @@ def signup(data):
     return {"message": "Unable to create user"}, 500
 
 def login(auth):
-   
     if not auth or not auth.get("password"):
         return "Proper Credentials were not provided", 401
     user = Users.query.filter_by(email=auth.get("email")).first()
