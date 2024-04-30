@@ -3,6 +3,7 @@ from flask import Blueprint, request, make_response
 from ..models.models import PlanTarifications ,Services
 import os
 from flask import jsonify
+from forex_python.converter import CurrencyRates
 
 
 
@@ -101,6 +102,52 @@ def get_plans(service_id) :
         serialized_plans = [plan.serialize for plan in plans]
         return jsonify({"data" : serialized_plans }), 200
     
+    except Exception as e:
+        # Return an error response if there's an exception
+        return jsonify({'error': str(e)}), 500
+
+
+def convert_currency(price, from_currency, to_currency):
+    import requests
+
+    import requests
+
+    url = "https://currency-conversion-and-exchange-rates.p.rapidapi.com/convert"
+    querystring = {"from":from_currency,"to":to_currency,"amount":price}
+    headers = {
+        "X-RapidAPI-Key": os.getenv("X-RapidAPI-Key"),
+        "X-RapidAPI-Host": os.getenv("X-RapidAPI-Host")
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+    json_response = response.json()
+    if(json_response['success']) :
+        return response.json()['result']
+    else :
+        return -1
+
+
+
+def convert(plan_id ,to_currency ) : 
+    try:
+
+        if(plan_id is None) : 
+            return {'error': 'plan_id is required '}, 404
+        plan = PlanTarifications.query.get(plan_id)
+        if not plan:
+            return {'error': 'Plan not found'}, 404
+       
+        new_tarif = convert_currency(plan.tarif,"DZD",to_currency)
+        if(new_tarif ==-1 ) : 
+            return jsonify({'error': 'Invalid currency'}), 404
+
+        if plan:
+            serialized_plan = plan.serialize
+            serialized_plan['new_tarif'] = new_tarif
+            return jsonify(serialized_plan), 200
+        else:
+            # Return a 404 error response if the plan is not found
+            return jsonify({'error': 'Plan tariff not found'}), 404
     except Exception as e:
         # Return an error response if there's an exception
         return jsonify({'error': str(e)}), 500
