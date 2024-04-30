@@ -71,6 +71,13 @@ class Services(db.Model):
     plan = db.relationship('PlanTarifications', backref='service', lazy=True, cascade='all, delete-orphan')
 
 
+    @property
+    def serialize(self):
+        return {
+            "id": self.id,
+            "nomService": self.nomService,
+            "description": self.description
+        }
     
     def __repr__(self):
         return f'<Service {self.id}>'

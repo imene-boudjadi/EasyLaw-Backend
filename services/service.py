@@ -2,6 +2,8 @@ from .. import db
 from flask import Blueprint, request, make_response
 from ..models.models import Services
 import os
+from flask import jsonify
+
 # i need to add upload photo and if it doesn't exist i add by default one 
 def new_service(data): 
         nom_service = data.get('nomService')
@@ -89,3 +91,13 @@ def upload_pic_service(file):
         pic = url
         file.save(os.path.join(UPLOAD_FOLDER, filename))
         return {"url":pic}, 200
+    
+
+def get_services() : 
+    try:
+        services = Services.query.all()
+        serialized_services = [service.serialize for service in services]
+        return jsonify({"data" :serialized_services}), 200
+    except Exception as e:
+        # Return an error response if there's an exception
+        return jsonify({'error': str(e)}), 500

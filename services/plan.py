@@ -70,7 +70,7 @@ def edit_plan(data) :
         return {'error': str(e)}, 500
     
 
-    
+
 def del_plan(plan_id) :
     if(plan_id is None) : 
         return {'error': 'plan_id is required '}, 404
@@ -85,3 +85,5 @@ def del_plan(plan_id) :
     except Exception as e:
         db.session.rollback()
         return {'error': str(e)}, 500
+    
+
