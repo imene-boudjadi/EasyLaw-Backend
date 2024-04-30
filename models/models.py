@@ -110,6 +110,16 @@ class PlanTarifications(db.Model):
     durree = db.Column(db.Integer, nullable=False)
     abonement = db.relationship('AbonementServices', backref='plan', lazy=True, cascade='all, delete-orphan')
 
+    @property
+    def serialize(self):
+        return {
+            "id": self.id,
+            "nom": self.nom,
+            "tarif": self.tarif,
+            "type_tarification": self.type_tarification,
+            "monnaire": self.monnaire,
+            "durree": self.durree,
+        }
 
     def __repr__(self):
         return f'<PlanTarification  {self.id}>'

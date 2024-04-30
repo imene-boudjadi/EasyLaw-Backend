@@ -2,6 +2,8 @@ from .. import db
 from flask import Blueprint, request, make_response
 from ..models.models import PlanTarifications ,Services
 import os
+from flask import jsonify
+
 
 
 def new_plan(data): 
@@ -87,3 +89,18 @@ def del_plan(plan_id) :
         return {'error': str(e)}, 500
     
 
+def get_plans(service_id) : 
+    try:
+        if(service_id is None) : 
+            return {'error': 'service_id is required '}, 404
+        service = Services.query.get(service_id)
+        if not service:
+            return {'error': 'No Service with this Id'}, 404 
+                   
+        plans = PlanTarifications.query.filter_by(service_id=service_id).all()
+        serialized_plans = [plan.serialize for plan in plans]
+        return jsonify({"data" : serialized_plans }), 200
+    
+    except Exception as e:
+        # Return an error response if there's an exception
+        return jsonify({'error': str(e)}), 500
