@@ -75,7 +75,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
      
 def upload_pic_service(file):
-    UPLOAD_FOLDER = 'servicePictures'  # Dossier de téléchargement
+    UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER_Pictures") # Dossier de téléchargement
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
 

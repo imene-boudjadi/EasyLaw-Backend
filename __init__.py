@@ -6,7 +6,7 @@ import os
 # Charger les variables d'environnement à partir du fichier .env
 load_dotenv()
 
-app = Flask(__name__,static_url_path='/servicePictures', static_folder='servicePictures')
+app = Flask(__name__,static_url_path='/uploads/servicePictures', static_folder='uploads/servicePictures')
 
 db= SQLAlchemy()
 
