@@ -100,6 +100,7 @@ class PlanTarifications(db.Model):
     tarif = db.Column(db.Float, nullable=False)
     type_tarification = db.Column(db.String(255), nullable=False)
     monnaire = db.Column(db.String(255), nullable=False)
+    durree = db.Column(db.Integer, nullable=False)
     abonement = db.relationship('AbonementServices', backref='plan', lazy=True, cascade='all, delete-orphan')
 
 
