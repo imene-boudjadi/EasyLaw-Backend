@@ -3,17 +3,58 @@ import os
 moderator_routes = Blueprint('moderator_routes', __name__)
 
 from flask import jsonify
-from ..services.adminService import *
+from ..services.services import getUsers,delete_user,get_moderators,add_new_moderator,update_moderator
 
+
+
+
+@moderator_routes.route('/moderators',methods=['GET'])
+def getmoderators_route():
+    moderators=get_moderators()
+    return jsonify(moderators)
 #http://localhost:5000/users_with_subscriptions?page=1&per_page=20
 @moderator_routes.route('/users_with_subscriptions', methods=['GET'])
-def get_users_subscriptions():
+def get_users_subscriptions_route():
 
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
-    users = get_users_with_subscriptions(page=page, per_page=per_page)
+    users = getUsers(page=page, per_page=per_page)
     return jsonify(users)
-    
+
+
+@moderator_routes.route('/delete_user', methods=['POST'])
+#http://localhost:5000/delete_user?id=1
+def delete_user_route():
+    id= request.args.get('id',None,type=int)
+    result=delete_user(id)
+    if(result!=None):
+         return  jsonify({'success': 'Moderator found'}),201
+    else:
+        return jsonify({'error': 'Moderator not found'}), 404
+
+@moderator_routes.route('/add_moderator', methods=['POST'])
+
+def add_moderator_route():
+    data = request.get_json()
+    moderator = add_new_moderator(data)
+    if moderator is None:
+        return jsonify({'error': 'Moderator not found'}), 404
+    return jsonify(moderator.to_dict()), 201
+
+
+@moderator_routes.route('/update_moderator', methods=['POST'])
+#http://localhost:5000/update_moderator?id=1
+
+def update_moderator_route():
+    data = request.get_json()
+    moderator = update_moderator(data)
+    if moderator is None:
+        return jsonify({'error': 'Moderator not found'}), 404
+    return jsonify(moderator.to_dict()), 201
+
+
+
+"""   
 @moderator_routes.route('/moderators',methods=['GET'])
 def get_moderators():
     moderators=getAdminsWithContactInfos()
@@ -102,3 +143,4 @@ def unbloc_user_route():
     else:
         return jsonify({'error': 'user not found'}), 404
 
+"""

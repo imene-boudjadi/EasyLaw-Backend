@@ -7,6 +7,8 @@ class infoContact(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     designation=db.Column(db.String)
     value=db.Column(db.String)
+    acteur = db.Column(db.Integer, db.ForeignKey('Acteur.id'))
+
 
     def to_dict(self):
         return {
@@ -19,19 +21,29 @@ class infoContact(db.Model):
 class Acteur(db.Model):
     __tablename__ = "Acteur"
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    userName = db.Column(db.String(64), index=True, unique=True)
+    userName = db.Column(db.String(64), index=True)
     password = db.Column(db.String(64))
-    infoContact = db.Column(db.Integer, db.ForeignKey('infoContact.id'))
+    contacts = db.relationship('infoContact', backref='acteurrelation', lazy='dynamic')
 
     role = db.Column(db.String)
     deleted = db.Column(db.Boolean)
     Email = db.Column(db.String(120), index=True, unique=True)
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'userName': self.userName,
+            'password': self.password,
+            'role': self.role,
+            'deleted': self.deleted,
+            'Email': self.Email,
+            'contacts': [contact.to_dict() for contact in self.contacts]
+        }
 
 
-class service(db.Model):
+class Service(db.Model):
     __tablename__ = "service"
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    nom= db.Column(db.String(64), index=True, unique=True)
+    nom= db.Column(db.String(64), index=True)
     description = db.Column(db.String(100))
     pic = db.Column(db.String(100))
 
@@ -56,11 +68,7 @@ class PlanTarification(db.Model):
     abonnement_id = db.Column(db.Integer, db.ForeignKey('AbonnementService.id'))
 
     
-
-
-
-
-class payement(db.Model):
+class Payement(db.Model):
     __tablename__="payement"
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     abonnement_id = db.Column(db.Integer, db.ForeignKey('AbonnementService.id'))
