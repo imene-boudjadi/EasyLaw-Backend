@@ -1,7 +1,7 @@
 from flask import Blueprint, request, make_response
 from ..models.models import Services
 from .. import db
-from ..services.plan import new_plan,edit_plan #,edit_service,del_service,upload_pic_service
+from ..services.plan import new_plan,edit_plan ,del_plan #,edit_service,del_service,upload_pic_service
 plan_routes = Blueprint('plan_routes', __name__)
 
 @plan_routes.route('/createplan', methods=['POST'])
@@ -17,3 +17,8 @@ def update_plan() :
     response, status_code = edit_plan(data)
     return make_response(response, status_code)
 
+
+@plan_routes.route('/deleteplan/<int:plan_id>',methods=['DELETE'])
+def delete_plan(plan_id): 
+    response, status_code = del_plan(plan_id)
+    return make_response(response, status_code)

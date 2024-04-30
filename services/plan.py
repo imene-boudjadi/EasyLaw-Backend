@@ -69,3 +69,19 @@ def edit_plan(data) :
         db.session.rollback()
         return {'error': str(e)}, 500
     
+
+    
+def del_plan(plan_id) :
+    if(plan_id is None) : 
+        return {'error': 'plan_id is required '}, 404
+    plan = PlanTarifications.query.get(plan_id)
+    if not plan:
+        return {'error': 'Plan not found'}, 404
+
+    try:
+        db.session.delete(plan)
+        db.session.commit()
+        return {'message': 'Plan deleted successfully'}, 200
+    except Exception as e:
+        db.session.rollback()
+        return {'error': str(e)}, 500
