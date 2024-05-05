@@ -14,7 +14,6 @@ Le décorateur `admin_required` est utilisé pour s'assurer que seuls les utilis
 
 
 
-D'accord, voici comment vous pourriez documenter vos fonctions en suivant le même format :
 
 **Routes d'administration**
 
