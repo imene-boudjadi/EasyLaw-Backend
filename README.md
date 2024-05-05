@@ -85,3 +85,16 @@ D'accord, voici comment vous pourriez documenter vos fonctions en suivant le mê
   - Réponse en cas d'erreur:
     - success: false
     - message: String
+Supprimer un utilisateur
+
+Url: /delete_user?id={id}
+Méthode: POST
+En-tête : Authorization Bearer {token}
+Corps de la requête: Non applicable
+Réponse:
+Réponse en cas de succès:
+success: true
+message: ‘user found’
+Réponse en cas d’erreur:
+success: false
+message: ‘user not found’
