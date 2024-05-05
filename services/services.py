@@ -3,23 +3,29 @@
 from ..models.models import *
 from .. import db
 
+from flask import jsonify
+import jwt
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
+from flask import request
+from functools import wraps
 
 
 
 
 def get_moderators():
-    moderators=Acteur.query.filter_by(deleted=False,role="moderator").all()
+    moderators=Users.query.filter_by(deleted=False,role="moderateur").all()
     moderators_list=[]
     for moderator in moderators:
         
         
         moderator={
             'id': moderator.id,
-            'userName': moderator.userName,
-            'Email': moderator.Email,
+            'userName': moderator.username,
+            'Email': moderator.email,
             'role': moderator.role,
             'deleted': moderator.deleted,
-            'infoContact': moderator.infoContact
+            'phoneNumber': moderator.phoneNumber
         }
         moderators_list.append(moderator)  
     return moderators_list 
@@ -29,16 +35,16 @@ def get_moderators():
 
 
 def getUsers(page=1, per_page=10):
-    paginated_users = Acteur.query.filter_by(deleted=False, role="user").paginate(page=page, per_page=per_page, error_out=True, max_per_page=None)
+    paginated_users = Users.query.filter_by(deleted=False, role="user").paginate(page=page, per_page=per_page, error_out=True, max_per_page=None)
     result = []
     for user in paginated_users.items:
         result.append({
             'id': user.id,
-            'userName': user.userName,
-            'Email': user.Email,
+            'userName': user.username,
+            'Email': user.email,
             'role': user.role,
             'deleted': user.deleted,
-            'infoContact': user.infoContact
+            'phoneNumber': user.phoneNumber
         })
     return result
 
@@ -46,7 +52,7 @@ def delete_user(id):
     
     
     if id:
-        user_to_update = Acteur.query.get(id)
+        user_to_update = Users.query.get(id)
         if not user_to_update:
             return None  
         else:
@@ -57,19 +63,22 @@ def delete_user(id):
 
 
 def add_new_moderator(data):
-    new_moderator = Acteur(**data)
+    hashed_password = generate_password_hash(data['password'])
+    data['password'] = hashed_password
+    new_moderator = Users(**data)
     db.session.add(new_moderator)
     db.session.flush()  # pour recuperer lid du moderateur ajouté 
     
     db.session.commit()
     return new_moderator
 
-
 def update_moderator(data):
     
     moderator_id = data.pop('id', None)
+    hashed_password = generate_password_hash(data['password'])
+    data['password'] = hashed_password
     if moderator_id:
-        moderator_to_update = Acteur.query.get(moderator_id)
+        moderator_to_update = Users.query.get(moderator_id)
         if not moderator_to_update:
             return None  
         for key, value in data.items():
@@ -80,5 +89,7 @@ def update_moderator(data):
             
     db.session.commit()
     return moderator_to_update
+
+
 
 

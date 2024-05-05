@@ -1,7 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from .. import db
-
+from enum import Enum
+from sqlalchemy import func
 
 
 class Service(db.Model):
@@ -26,39 +27,51 @@ class Domaine(db.Model):
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
     nom = db.Column(db.String)
 
-class Acteur(db.Model):
-    __tablename__="acteur"
+
+class RoleEnum(str, Enum):
+    user = 'user'
+    admin = 'admin'
+    moderateur = 'moderateur'
+   
+
+
+    
+
+
+
+class Users(db.Model):
+    __tablename__="Users"
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    userName = db.Column(db.String)
+    username = db.Column(db.String)
     password = db.Column(db.String)
     niveau = db.Column(db.Integer)
-    role = db.Column(db.String)
-    infoContact = db.Column(db.Integer)
-    Email = db.Column(db.String)
-    deleted = db.Column(db.Boolean)
+    role = db.Column(db.Enum(RoleEnum), nullable=False)
+    phoneNumber = db.Column(db.Integer)
+    email = db.Column(db.String,unique=True)
+    deleted = db.Column(db.Boolean,default=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    def __repr__(self):
+        return f'<User {self.username} {self.id}>'
+
     def to_dict(self):
-        return {
-            'id': self.id,
-            'userName': self.userName,
-            'password': self.password,
-            'niveau': self.niveau,
-            'role': self.role,
-            'infoContact': self.infoContact,
-            'Email': self.Email,
-            'deleted': self.deleted
-        }
+     return {
+        'id': self.id,
+        'username': self.username,
+        'password': self.password,
+        'niveau': self.niveau,
+        'role': str(self.role),  # Convertir l'énumération en chaîne
+        'phoneNumber ': self.phoneNumber ,
+        'email': self.email,
+        'deleted': self.deleted,
+        'created_at': self.created_at
+    }
 
-class ActeurDomaine(db.Model):
-    __tablename__="acteurDomaine"
 
-    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    acteur_id = db.Column(db.Integer, db.ForeignKey('acteur.id'))
-    domaine_id = db.Column(db.Integer, db.ForeignKey('domaine.id'))
 
 class AccessToken(db.Model):
     __tablename__="accessToken"
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    acteur_id = db.Column(db.Integer, db.ForeignKey('acteur.id'))
+    Users_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
     service_id = db.Column(db.Integer, db.ForeignKey('service.id'))
 
     expires = db.Column(db.DateTime)
@@ -150,7 +163,7 @@ class infoContact(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     designation=db.Column(db.String)
     value=db.Column(db.String)
-    acteur = db.Column(db.Integer, db.ForeignKey('Acteur.id'))
+    Users = db.Column(db.Integer, db.ForeignKey('Users.id'))
 
 
     def to_dict(self):
@@ -161,12 +174,12 @@ class infoContact(db.Model):
         }
     
   
-class Acteur(db.Model):
-    __tablename__ = "Acteur"
+class Users(db.Model):
+    __tablename__ = "Users"
     id = db.Column(db.Integer, primary_key=True,autoincrement=True)
     userName = db.Column(db.String(64), index=True)
     password = db.Column(db.String(64))
-    contacts = db.relationship('infoContact', backref='acteurrelation', lazy='dynamic')
+    contacts = db.relationship('infoContact', backref='Usersrelation', lazy='dynamic')
 
     role = db.Column(db.String)
     deleted = db.Column(db.Boolean)
@@ -215,7 +228,7 @@ class Payement(db.Model):
     __tablename__="payement"
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     abonnement_id = db.Column(db.Integer, db.ForeignKey('AbonnementService.id'))
-    acteur_id = db.Column(db.Integer, db.ForeignKey('Acteur.id'))
+    Users_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
     plan_tarification = db.Column(db.Integer, db.ForeignKey('PlanTarification.id'))
 
     moyen_paiement=db.Column(db.String)
@@ -231,7 +244,7 @@ class ContenuScrape(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     contenu = db.Column(db.Text)
     dateScraping = db.Column(db.Date)
-    acteurId = db.Column(db.Integer)
+    UsersId = db.Column(db.Integer)
     typeSourceScrape = db.Column(db.Integer)
     indexe = db.Column(db.Boolean)
 
