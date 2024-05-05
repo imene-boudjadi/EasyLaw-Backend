@@ -12,14 +12,76 @@ Le décorateur `admin_required` est utilisé pour s'assurer que seuls les utilis
 
 ## Routes
 
-- **/users [GET]** : Cette route renvoie une liste paginée d'utilisateurs. Les paramètres `page` et `per_page` peuvent être fournis dans la chaîne de requête pour contrôler la pagination.
 
-- **/moderators [GET]** : Cette route renvoie une liste de modérateurs.
 
-- **/delete_user [POST]** : Cette route supprime un utilisateur spécifié par l'ID dans la chaîne de requête.
+D'accord, voici comment vous pourriez documenter vos fonctions en suivant le même format :
 
-- **/add_moderator [POST]** : Cette route ajoute un nouveau modérateur. Les détails du modérateur sont fournis dans le corps de la requête au format JSON.
+**Routes d'administration**
 
-- **/update_moderator [POST]** : Cette route met à jour un modérateur existant. Les détails du modérateur sont fournis dans le corps de la requête au format JSON.
+**Obtenir tous les utilisateurs**
+- Url: /users
+- Méthode: GET
+- En-tête : Authorization Bearer {token}
+- Corps de la requête: Non applicable
+- Réponse:
+  - Réponse en cas de succès:
+    - success: true
+    - data: [Objets utilisateur]
+  - Réponse en cas d'erreur:
+    - success: false
+    - message: String
 
-Toutes ces routes nécessitent que l'utilisateur soit un administrateur, comme indiqué par le décorateur `@admin_required`.
+**Obtenir tous les modérateurs**
+- Url: /moderators
+- Méthode: GET
+- En-tête : Authorization Bearer {token}
+- Corps de la requête: Non applicable
+- Réponse:
+  - Réponse en cas de succès:
+    - success: true
+    - data: [Objets modérateur]
+  - Réponse en cas d'erreur:
+    - success: false
+    - message: String
+
+**Mettre à jour un modérateur**
+- Url: /update_moderator?id={id}
+- Méthode: POST
+- En-tête : Authorization Bearer {token}
+- Corps de la requête:
+  - id: Int
+  - username: String
+  - password: String
+  - niveau: Int
+  - role: String
+  - phoneNumber: Int
+  - email: String
+  - deleted: Boolean
+- Réponse:
+  - Réponse en cas de succès:
+    - success: true
+    - data: Objet du modérateur mis à jour
+  - Réponse en cas d'erreur:
+    - success: false
+    - message: String
+
+**Ajouter un modérateur**
+- Url: /add_moderator
+- Méthode: POST
+- En-tête : Authorization Bearer {token}
+- Corps de la requête:
+  - id: Int
+  - username: String
+  - password: String
+  - niveau: Int
+  - role: String
+  - phoneNumber: Int
+  - email: String
+  - deleted: Boolean
+- Réponse:
+  - Réponse en cas de succès:
+    - success: true
+    - data: Objet du modérateur créé
+  - Réponse en cas d'erreur:
+    - success: false
+    - message: String
