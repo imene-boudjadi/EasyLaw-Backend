@@ -16,6 +16,8 @@ class Users(db.Model):
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.Enum(RoleEnum), nullable=False)
     phoneNumber = db.Column(db.String(20))
+    secondPhoneNumber = db.Column(db.String(20))  
+    address = db.Column(db.String(255))     
     deleted = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
