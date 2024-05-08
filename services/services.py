@@ -34,7 +34,7 @@ def get_moderators():
 
 
 
-def getUsers(page=1, per_page=10):
+def getUsers(page=1, per_page=6):
     paginated_users = Users.query.filter_by(deleted=False, role="user").paginate(page=page, per_page=per_page, error_out=True, max_per_page=None)
     result = []
     for user in paginated_users.items:
@@ -47,6 +47,25 @@ def getUsers(page=1, per_page=10):
             'phoneNumber': user.phoneNumber
         })
     return result
+
+
+
+def getModeratorById(id):
+   user = Users.query.get(id)
+   
+   if user is None:
+       return None
+
+   result = {
+            'id': user.id,
+            'userName': user.username,
+            'Email': user.email,
+            'role': user.role,
+            'deleted': user.deleted,
+            'phoneNumber': user.phoneNumber
+        }
+   return result
+
 
 def delete_user(id):
     

@@ -28,18 +28,25 @@ def admin_required(f):
     return decorated
 
 
+from math import ceil
+def countUsers():
+    return db.session.query(Users).filter_by(deleted=False, role="user").count()
 
 @moderator_routes.route('/users', methods=['GET'])
 @admin_required
-
-#http://localhost:5000/users?page=1&per_page=20
-
 def get_users_subscriptions_route(current_user):
-
     page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 10, type=int)
+    per_page = request.args.get('per_page', 6, type=int)
     users = getUsers(page=page, per_page=per_page)
-    return jsonify(users)
+
+    total_users = countUsers()  
+    total_pages = ceil(total_users / per_page)
+
+    return jsonify({
+        'users': users,
+        'total_pages': total_pages,
+    })
+
 
 
 @moderator_routes.route('/moderators',methods=['GET'])
@@ -96,10 +103,15 @@ def update_moderator_route(current_user):
         return jsonify({'error': 'Moderator not found'}), 404
     return jsonify(moderator.to_dict()), 201
 
-
-
-
-
+@moderator_routes.route('/get_moderator_by_id', methods=['POST'])
+@admin_required
+def get_moderator_by_id_route(current_user):
+    id= request.args.get('id',None,type=int)
+    result=getModeratorById(id)
+    if(result is not None):
+         return  jsonify({'user': result}),201
+    else:
+        return jsonify({'error': 'user not found'}), 404
 
 
 
