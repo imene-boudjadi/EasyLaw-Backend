@@ -8,7 +8,7 @@ from forex_python.converter import CurrencyRates
 
 
 def new_plan(data): 
-        service_id =data.get('service_id')  # Foreign key reference
+        service_id =data.get('service_id')  
         if(service_id is None):
             return {'error': 'service_id is required  '}, 404
 

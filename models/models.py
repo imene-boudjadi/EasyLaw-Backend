@@ -12,9 +12,9 @@ class Users(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     role = db.Column(db.String(255), nullable=False)
     deleted= db.Column(db.Boolean, nullable=False)
-    infoContact = db.relationship('InfoContacts', backref='users', lazy=True, cascade='all, delete-orphan')
     domaine = db.relationship('InterestDomaines',secondary='ActeurDomaines', backref='users')
-    abonment = db.relationship('AbonementServices', backref='users', lazy=True, cascade='all, delete-orphan')
+    payement = db.relationship('Payements', backref='users', lazy=True, cascade='all, delete-orphan')
+    token = db.relationship('AccessTokens', backref='users', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<User {self.firstName} {self.id}>'
@@ -51,15 +51,6 @@ class Law(db.Model):
     def __repr__(self):
         return f'<Law {self.idLaw}>'
     
-class InfoContacts(db.Model):
-    __tablename__ = "InfoContacts"
-    id = db.Column(db.Integer, primary_key=True)
-    designation = db.Column(db.String(255), nullable=False)
-    value = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('Users.id'))  # Foreign key reference
-
-    def __repr__(self):
-        return f'<InfoContact {self.id}>'
 
 
 class Services(db.Model):
@@ -69,6 +60,7 @@ class Services(db.Model):
     description = db.Column(db.Text, nullable=False)
     pic = db.Column(db.String(255), nullable=False)
     plan = db.relationship('PlanTarifications', backref='service', lazy=True, cascade='all, delete-orphan')
+    token = db.relationship('AccessTokens', backref='service', lazy=True, cascade='all, delete-orphan')
 
 
     @property
@@ -82,6 +74,13 @@ class Services(db.Model):
     def __repr__(self):
         return f'<Service {self.id}>'
 
+class Payements(db.Model) : 
+    __tablename__ = "Payements"
+    id = db.Column(db.Integer, primary_key=True)
+    abonement_id  = db.Column(db.Integer, db.ForeignKey('AbonementServices.id')) 
+    acteur_id = db.Column(db.Integer, db.ForeignKey('Users.id')) 
+    date_paiement = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    moyen_payment = db.Column(db.String(255), nullable=False)
 
 class AbonementServices(db.Model):
     __tablename__ = "AbonementServices"
@@ -90,13 +89,15 @@ class AbonementServices(db.Model):
     durree = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(255), nullable=False)
     plan_id = db.Column(db.Integer, db.ForeignKey('PlanTarifications.id'))  # Foreign key reference
-    date_paiement = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    moyen_payment = db.Column(db.String(255), nullable=False)
-    acteur_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
-
+    payement = db.relationship('Payements', backref='abonement', lazy=True, cascade='all, delete-orphan')
     def __repr__(self):
         return f'<AbonementService {self.id}>'
 
+class AccessTokens(db.Model) : 
+    __tablename__="AccessTokens"
+    acteur_id = db.Column(db.Integer, db.ForeignKey('Users.id'),primary_key=True)  
+    service_id = db.Column(db.Integer, db.ForeignKey('Services.id'))  
+    expires = db.Column(db.DateTime, nullable=False)
 
 
 class PlanTarifications(db.Model):
