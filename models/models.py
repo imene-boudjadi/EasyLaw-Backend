@@ -85,9 +85,6 @@ class Payements(db.Model) :
 class AbonementServices(db.Model):
     __tablename__ = "AbonementServices"
     id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(255), nullable=False)
-    durree = db.Column(db.Integer, nullable=False)
-    description = db.Column(db.String(255), nullable=False)
     plan_id = db.Column(db.Integer, db.ForeignKey('PlanTarifications.id'))  # Foreign key reference
     payement = db.relationship('Payements', backref='abonement', lazy=True, cascade='all, delete-orphan')
     def __repr__(self):

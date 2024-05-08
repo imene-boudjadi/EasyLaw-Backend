@@ -6,7 +6,18 @@ service_routes = Blueprint('service_routes', __name__)
 
 @service_routes.route('/createservice', methods=['POST'])
 def create_service():
-    data = request.json
+
+    if request.content_type == 'application/json':
+        data = request.json
+    else :
+        data = {
+            'description': request.form.get('description'),
+            'nomService': request.form.get('nomService'),
+        }
+        if 'file' not in request.files:
+            file = request.files['file']
+            url = upload_pic_service(file)
+            data['pic'] = url
     response, status_code = new_service(data)
     return make_response(response, status_code)
 
@@ -24,14 +35,6 @@ def delete_service(service_id):
     return make_response(response, status_code)
 
 
-@service_routes.route('/uploadservicephoto', methods=['POST'])
-def upload_pic():
-    if 'file' not in request.files:
-       return make_response({"error":"No image uploaded"},400 )
-    
-    file = request.files['file']
-    response, status_code = upload_pic_service(file)
-    return make_response(response, status_code)
 
 
 @service_routes.route('/getAllServices', methods=['GET'])

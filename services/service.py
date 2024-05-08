@@ -77,10 +77,9 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
      
 def upload_pic_service(file):
-    UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER_Pictures") # Dossier de téléchargement
+    UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER_Pictures") 
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
-
     
     if file:
         filename = file.filename
@@ -90,7 +89,7 @@ def upload_pic_service(file):
         url = base_url.rsplit('/', 1)[0] + '/' + UPLOAD_FOLDER + '/' + filename
         pic = url
         file.save(os.path.join(UPLOAD_FOLDER, filename))
-        return {"url":pic}, 200
+        return pic
     
 
 def get_services() : 
