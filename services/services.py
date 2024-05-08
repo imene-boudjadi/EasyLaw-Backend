@@ -94,8 +94,7 @@ def add_new_moderator(data):
 def update_moderator(data):
     
     moderator_id = data.pop('id', None)
-    hashed_password = generate_password_hash(data['password'])
-    data['password'] = hashed_password
+    
     if moderator_id:
         moderator_to_update = Users.query.get(moderator_id)
         if not moderator_to_update:
