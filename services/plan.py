@@ -4,6 +4,7 @@ from ..models.models import PlanTarifications ,Services
 import os
 from flask import jsonify
 from forex_python.converter import CurrencyRates
+import requests
 
 
 
@@ -18,13 +19,18 @@ def new_plan(data):
         nom = data.get('nom')
         tarif = data.get('tarif')
         type_tarification =  data.get('type_tarification')
+        duree = data.get('duree')
+        description= data.get('description')
 
 
-        if(service_id and nom and tarif and type_tarification   ) :
-            new_plan = PlanTarifications(service_id=service_id,nom=nom,tarif=tarif ,monnaire="DZD" ,type_tarification=type_tarification) 
+        if(service_id and nom and tarif and type_tarification and duree and description  ) :
+            if(duree != 30 and duree != 365) :
+                return {'error': "the duree is invalid the allowed values are(30,365) "}, 400
+            else : 
+                new_plan = PlanTarifications(service_id=service_id,nom=nom,tarif=tarif ,price_id="" ,durree=duree, description = description ,monnaire="DZD" ,type_tarification=type_tarification) 
         else : 
-            return {'error': "service_id , nom , tarif , type_tarification"}, 400
-        
+            return {'error': "service_id , nom , tarif , type_tarification ,description,duree are required "}, 400
+    
         try:
             db.session.add(new_plan)
             db.session.commit()
@@ -49,14 +55,14 @@ def edit_plan(data) :
     if 'tarif' in data:
         plan.tarif = data['tarif']
     if 'type_tarification' in data:
-        if(data['type_tarification'] != "مخصص" and data['type_tarification'] != "مميز") :
-                return {"error":"Unallowed type of tarification the allowed values are (مخصص or مميز)"},400
         plan.type_tarification = data['type_tarification']
 
-    if 'durree' in data:
-        if(data['durree'] != 30 and data['durree'] != 365) : 
+    if 'duree' in data:
+        if(data['duree'] != 30 and data['duree'] != 365) : 
             return {"error":"Unallowed durree  (the allowed values are : 30 or 365)"},400
-        plan.durree = data['durree']
+        plan.durree = data['duree']
+    if 'description' in data : 
+        plan.description = data['description']
 
     try:
         db.session.commit()
@@ -101,11 +107,10 @@ def get_plans(service_id) :
 
 
 def convert_currency(price, from_currency, to_currency):
-    import requests
 
-    import requests
 
     url = "https://currency-conversion-and-exchange-rates.p.rapidapi.com/convert"
+    print(from_currency,to_currency,price)
     querystring = {"from":from_currency,"to":to_currency,"amount":price}
     headers = {
         "X-RapidAPI-Key": os.getenv("X-RapidAPI-Key"),

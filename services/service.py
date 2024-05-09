@@ -71,26 +71,7 @@ def del_service(service_id):
         return {'error': str(e)}, 500
 
      
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-     
-def upload_pic_service(file):
-    UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER_Pictures") 
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
-    
-    if file:
-        filename = file.filename
-        if not allowed_file(file.filename):
-            return {"error": "Only image files (png, jpg, jpeg, gif) are allowed"}, 400
-        base_url = os.getenv("BASE_URL")
-        url = base_url.rsplit('/', 1)[0] + '/' + UPLOAD_FOLDER + '/' + filename
-        pic = url
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
-        return pic
-    
 
 def get_services() : 
     try:

@@ -15,6 +15,7 @@ class Users(db.Model):
     acteur_domaine = db.relationship('ActeurDomaines', backref='users')
     payement = db.relationship('Payements', backref='users', lazy=True, cascade='all, delete-orphan')
     token = db.relationship('AccessTokens', backref='users', lazy=True, cascade='all, delete-orphan')
+    customer_id = db.Column(db.String(255), nullable=True)
 
     def __repr__(self):
         return f'<User {self.firstName} {self.id}>'
@@ -89,7 +90,10 @@ class AbonementServices(db.Model):
     plan_id = db.Column(db.Integer, db.ForeignKey('PlanTarifications.id'))  # Foreign key reference
     payement = db.relationship('Payements', backref='abonement', lazy=True, cascade='all, delete-orphan')
     access_token_id = db.Column(db.Integer, db.ForeignKey('AccessTokens.id')) 
+    service_id =  db.Column(db.Integer, db.ForeignKey('Services.id'))  
     date_abonement = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    checkout_id = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
         return f'<AbonementService {self.id}>'
@@ -115,6 +119,7 @@ class PlanTarifications(db.Model):
     monnaire = db.Column(db.String(255), nullable=False)
     durree = db.Column(db.Integer, nullable=False)
     abonement = db.relationship('AbonementServices', backref='plan', lazy=True, cascade='all, delete-orphan')
+    price_id = db.Column(db.String(255), nullable=False)
 
     @property
     def serialize(self):
@@ -151,4 +156,3 @@ class InterestDomaines(db.Model) :
     
     def __repr__(self):
         return f'<InterestDomaine {self.id}>'
-

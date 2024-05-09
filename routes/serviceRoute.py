@@ -1,23 +1,12 @@
 from flask import Blueprint, request, make_response
 from ..models.models import Services
 from .. import db
-from ..services.service import new_service,edit_service,del_service,upload_pic_service,get_services
+from ..services.service import new_service,edit_service,del_service,get_services
 service_routes = Blueprint('service_routes', __name__)
 
 @service_routes.route('/createservice', methods=['POST'])
 def create_service():
-
-    if request.content_type == 'application/json':
-        data = request.json
-    else :
-        data = {
-            'description': request.form.get('description'),
-            'nomService': request.form.get('nomService'),
-        }
-        if 'file' not in request.files:
-            file = request.files['file']
-            url = upload_pic_service(file)
-            data['pic'] = url
+    data = request.json
     response, status_code = new_service(data)
     return make_response(response, status_code)
 
