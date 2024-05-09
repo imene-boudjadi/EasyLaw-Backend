@@ -12,9 +12,10 @@ class Users(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     role = db.Column(db.String(255), nullable=False)
     deleted= db.Column(db.Boolean, nullable=False)
-    domaine = db.relationship('InterestDomaines',secondary='ActeurDomaines', backref='users')
+    acteur_domaine = db.relationship('ActeurDomaines', backref='users')
     payement = db.relationship('Payements', backref='users', lazy=True, cascade='all, delete-orphan')
-    token = db.relationship('AccessToken', backref='users', lazy=True, cascade='all, delete-orphan')
+    token = db.relationship('AccessTokens', backref='users', lazy=True, cascade='all, delete-orphan')
+    customer_id = db.Column(db.String(255), nullable=True)
 
     def __repr__(self):
         return f'<User {self.firstName} {self.id}>'
@@ -61,6 +62,7 @@ class Services(db.Model):
     pic = db.Column(db.String(255), nullable=False)
     plan = db.relationship('PlanTarifications', backref='service', lazy=True, cascade='all, delete-orphan')
     token = db.relationship('AccessTokens', backref='service', lazy=True, cascade='all, delete-orphan')
+    abonement = db.relationship('AbonementServices', backref='service', lazy=True, cascade='all, delete-orphan')
 
 
     @property
@@ -85,31 +87,41 @@ class Payements(db.Model) :
 class AbonementServices(db.Model):
     __tablename__ = "AbonementServices"
     id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(255), nullable=False)
-    durree = db.Column(db.Integer, nullable=False)
-    description = db.Column(db.String(255), nullable=False)
     plan_id = db.Column(db.Integer, db.ForeignKey('PlanTarifications.id'))  # Foreign key reference
     payement = db.relationship('Payements', backref='abonement', lazy=True, cascade='all, delete-orphan')
+    access_token_id = db.Column(db.Integer, db.ForeignKey('AccessTokens.id')) 
+    date_abonement = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    checkout_id = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.String(255), nullable=False)
+    service_id = db.Column(db.Integer, db.ForeignKey('Services.id')) 
+
+
     def __repr__(self):
         return f'<AbonementService {self.id}>'
 
 class AccessTokens(db.Model) : 
     __tablename__="AccessTokens"
-    acteur_id = db.Column(db.Integer, db.ForeignKey('Users.id'),primary_key=True)  
+    id = db.Column(db.Integer, primary_key=True)
+    acteur_id = db.Column(db.Integer, db.ForeignKey('Users.id'))  
     service_id = db.Column(db.Integer, db.ForeignKey('Services.id'))  
     expires = db.Column(db.DateTime, nullable=False)
+    abonement = db.relationship('AbonementServices', backref='accessTokens', lazy=True, cascade='all, delete-orphan')
+    token = db.Column(db.Text(), nullable=False)
+
 
 
 class PlanTarifications(db.Model):
     __tablename__="PlanTarifications"
     id = db.Column(db.Integer, primary_key=True)
-    service_id = db.Column(db.Integer, db.ForeignKey('Services.id'))  # Foreign key reference
+    service_id = db.Column(db.Integer, db.ForeignKey('Services.id'))  
     nom = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
     tarif = db.Column(db.Float, nullable=False)
     type_tarification = db.Column(db.String(255), nullable=False)
     monnaire = db.Column(db.String(255), nullable=False)
     durree = db.Column(db.Integer, nullable=False)
     abonement = db.relationship('AbonementServices', backref='plan', lazy=True, cascade='all, delete-orphan')
+    price_id = db.Column(db.String(255), nullable=False)
 
     @property
     def serialize(self):
@@ -132,9 +144,6 @@ class ActeurDomaines(db.Model):
     __tablename__="ActeurDomaines"
     acteur_id = db.Column(db.Integer, db.ForeignKey('Users.id'),primary_key=True)  # Foreign key reference
     interet_id = db.Column(db.Integer, db.ForeignKey('InterestDomaines.id'),primary_key=True)  # Foreign key reference
-
-    # acteur = db.relationship('Users', backref='acteur', lazy=True, cascade='all, delete-orphan')
-    # interest_domain = db.relationship('InterestDomaines', backref='interest', lazy=True, cascade='all, delete-orphan')
 
 
     def __repr__(self):
