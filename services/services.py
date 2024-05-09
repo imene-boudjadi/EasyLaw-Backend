@@ -27,7 +27,10 @@ def signup(data):
             email=email,
             password=generate_password_hash(password),
             firstName=firstName,
-            LastName=LastName
+            LastName=LastName,
+            role="user",
+            customer_id="",
+            deleted=False
         )
         db.session.add(user)
         db.session.commit()

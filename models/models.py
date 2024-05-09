@@ -140,8 +140,8 @@ class PlanTarifications(db.Model):
 
 class ActeurDomaines(db.Model):
     __tablename__="ActeurDomaines"
-    acteur_id = db.Column(db.Integer, db.ForeignKey('Users.id'),primary_key=True)  # Foreign key reference
-    interet_id = db.Column(db.Integer, db.ForeignKey('InterestDomaines.id'),primary_key=True)  # Foreign key reference
+    acteur_id = db.Column(db.Integer, db.ForeignKey('Users.id'),primary_key=True)  
+    interet_id = db.Column(db.Integer, db.ForeignKey('InterestDomaines.id'),primary_key=True)  
 
 
     def __repr__(self):

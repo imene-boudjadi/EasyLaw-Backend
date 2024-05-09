@@ -11,6 +11,7 @@ from .routes.lawRoute import law_routes # Importez la fonction depuis le fichier
 from .routes.userRoutes import user_routes 
 from .routes.serviceRoute import service_routes 
 from .routes.planRoutes import plan_routes 
+from .routes.InterestDomaineRoute import interest_domaine_routes
 
 CORS(app)
 
@@ -19,6 +20,6 @@ app.register_blueprint(user_routes, url_prefix='/')
 app.register_blueprint(law_routes, url_prefix='/')
 app.register_blueprint(service_routes, url_prefix='/')
 app.register_blueprint(plan_routes, url_prefix='/')
-
+app.register_blueprint(interest_domaine_routes,url_prefix='/')
 
 
