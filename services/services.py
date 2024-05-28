@@ -11,6 +11,25 @@ from flask import request
 from functools import wraps
 
 
+import logging
+
+# Créer un logger
+logger = logging.getLogger(__name__)
+
+# Définir le niveau de log
+logger.setLevel(logging.INFO)
+
+# Créer un gestionnaire de fichier
+handler = logging.FileHandler('logfile.log')
+
+# Créer un formateur et ajouter au gestionnaire
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+
+# Ajouter le gestionnaire au logger
+logger.addHandler(handler)
+
+
 
 
 def get_moderators():
@@ -28,7 +47,10 @@ def get_moderators():
             'phoneNumber': moderator.phoneNumber
         }
         moderators_list.append(moderator)  
-    return moderators_list 
+    
+    logger.info(f'Retrieved {len(moderators_list)} moderators')
+    
+    return moderators_list
 
 
 
@@ -46,7 +68,11 @@ def getUsers(page=1, per_page=6):
             'deleted': user.deleted,
             'phoneNumber': user.phoneNumber
         })
+        
+    logger.info(f'Retrieved {len(result)} users on page {page} with {per_page} users per page')
+        
     return result
+
 
 
 
@@ -64,6 +90,9 @@ def getModeratorById(id):
             'deleted': user.deleted,
             'phoneNumber': user.phoneNumber
         }
+    
+   logger.info(f'moderator  with id {user} was sollicitated')
+
    return result
 
 
@@ -77,6 +106,8 @@ def delete_user(id):
         else:
          setattr(user_to_update, 'deleted', True)
          db.session.commit()
+         logger.info(f'Updated user with id {user_to_update}')
+
          return True
 
 
@@ -88,6 +119,9 @@ def add_new_moderator(data):
     db.session.add(new_moderator)
     db.session.flush()  # pour recuperer lid du moderateur ajouté 
     
+
+    logger.info(f'Added new moderator with id {new_moderator.id}')
+
     db.session.commit()
     return new_moderator
 
@@ -101,12 +135,12 @@ def update_moderator(data):
             return None  
         for key, value in data.items():
             setattr(moderator_to_update, key, value)
+        
+        logger.info(f'Updated moderator with id {moderator_id}')
     
-
-    
-            
     db.session.commit()
     return moderator_to_update
+
 
 
 
