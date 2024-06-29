@@ -1,4 +1,4 @@
-# EasyLaw_Backend
+# EasyLaw-Backend
 
 1) Créer une base de données nommée easyLawDb dans PostgreSQL avec l'utilisateur 'postgres' et un mot de passe vide. 
 
