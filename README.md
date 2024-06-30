@@ -10,7 +10,7 @@ EasyLaw is an intelligent platform for legal monitoring. The back-end is develop
 
 3. Use `db.create_all()` to create all tables defined in SQLAlchemy database models.
 
-4. For initial data insertion, execute the following scripts:
+4. For initial data insertion, execute the following scripts :
    - `python insertionDomains.py`
    - `python insertionBDD_mahkama.py`
    - `python insertionBDD_majliss_test.py`
