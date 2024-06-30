@@ -1,25 +1,30 @@
 # EasyLaw-Backend
 
-1) Créer une base de données nommée easyLawDb dans PostgreSQL avec l'utilisateur 'postgres' et un mot de passe vide. 
+EasyLaw is an intelligent platform for legal monitoring. The back-end is developed using Flask with a PostgreSQL database.
 
-2) flask shell ===>  pour lancer un shell interactif Flask avec l'application chargée
+## Setup Instructions
 
-3) db.create_all() ===> pour créer toutes les tables définies dans nos modèles de base de données SQLAlchemy
-4) Pour l'insertion des données initiales, exécuter les scripts suivants :
- 
- ===> python insertionDomains.py
- ===> python insertionBDD_mahkama.py
- ===> python insertionBDD_majliss_test.py
- ===> python insertionLaws.py
- ===> python insertionPlanTarification.py
- ===> python insertionFactures.py  (Cela permet de créer un administrateur avec l'email abbaci@esi.dz et le mot de passe 123.)
+1. Create a database named easyLawDb in PostgreSQL with the user 'postgres' and an empty password.
 
-5) flask run --port 8000 ===> démarrer l'application Flask sur le port 8000
+2. Run `flask shell` to launch an interactive Flask shell with the loaded application.
 
-# chatbot requirements : 
-cohere
-pinecone-client
-configparser
-langchain-community
+3. Use `db.create_all()` to create all tables defined in SQLAlchemy database models.
 
-===> pip install cohere pinecone-client configparser langchain-community
+4. For initial data insertion, execute the following scripts:
+   - `python insertionDomains.py`
+   - `python insertionBDD_mahkama.py`
+   - `python insertionBDD_majliss_test.py`
+   - `python insertionLaws.py`
+   - `python insertionPlanTarification.py`
+     
+5. Use `flask run --port 8000` to start the Flask application on port 8000.
+
+## Chatbot Requirements
+
+Install the following Python packages for the chatbot:
+- cohere
+- pinecone-client
+- configparser
+- langchain-community
+
+Run `pip install cohere pinecone-client configparser langchain-community` to install these packages.
